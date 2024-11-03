@@ -40,6 +40,7 @@ public class UserInterface
                     "7) View All Vehicles\n" +
                     "8) Add Vehicle\n" +
                     "9) Remove Vehicle\n" +
+                    "10) Sell or Lease Vehicle\n" +
                     "0) Exit Dealership\n" +
                     "Command: ");
             command = commandScanner.nextInt();
@@ -72,6 +73,9 @@ public class UserInterface
                 case 9:
                     processRemoveVehicleRequest();
                     break;
+                case 10:
+                    leaseSellCar();
+                    break;
                 case 0:
                     System.out.println("Goodbye!");
                     break;
@@ -80,6 +84,10 @@ public class UserInterface
             }
 
         }while(command != 0);
+    }
+
+    private static void leaseSellCar() {
+        System.out.println("Would you like ");
     }
 
     private static void displayVehicles(List<Vehicle>vehicles)
