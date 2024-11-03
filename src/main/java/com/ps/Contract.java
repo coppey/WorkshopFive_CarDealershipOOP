@@ -4,13 +4,13 @@ public abstract class Contract {
     private String date;
     private String customerName;
     private String email;
-    private Vehicle vehicleSold;
+    private Vehicle vehicle;
 
-    public Contract(String date, String customerName, String email, Vehicle vehicleSold) {
+    public Contract(String date, String customerName, String email, Vehicle vehicle) {
         this.date = date;
         this.customerName = customerName;
         this.email = email;
-        this.vehicleSold = vehicleSold;
+        this.vehicle = vehicle;
     }
 
     public Contract(){}
@@ -43,12 +43,12 @@ public abstract class Contract {
         this.email = email;
     }
 
-    public Vehicle getVehicleSold() {
-        return vehicleSold;
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
-    public void setVehicleSold(Vehicle vehicleSold) {
-        this.vehicleSold = vehicleSold;
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
 
     @Override
@@ -57,7 +57,7 @@ public abstract class Contract {
                 "date='" + date + '\'' +
                 ", customerName='" + customerName + '\'' +
                 ", email='" + email + '\'' +
-                ", vehicleSold=" + vehicleSold +
+                ", vehicleSold=" + vehicle +
                 '}';
     }
 }

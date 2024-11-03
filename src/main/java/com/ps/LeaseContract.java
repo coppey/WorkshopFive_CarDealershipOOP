@@ -5,8 +5,8 @@ public class LeaseContract extends Contract {
     private double endValue;
     private double lesFee;
 
-    public LeaseContract(String date, String customerName, String email, Vehicle vehicleSold, double lesFee, double endValue) {
-        super(date, customerName, email, vehicleSold);
+    public LeaseContract(String date, String customerName, String email, Vehicle vehicle, double lesFee, double endValue) {
+        super(date, customerName, email, vehicle);
         this.lesFee = lesFee;
         this.endValue = endValue;
     }

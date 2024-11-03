@@ -3,14 +3,12 @@ import java.util.*;
 
 public class UserInterface
 {
-    //private static Dealership dealership
     private static Dealership dealership;
 
     public static Scanner commandScanner = new Scanner(System.in);
     public static Scanner inputScanner = new Scanner(System.in);
 
     public static void init(){
-        //System.out.println("Init Method");
         dealership = DealershipFileManager.getDealership();
         //loading dealership and inventory from file
     }
@@ -19,7 +17,6 @@ public class UserInterface
         //loading Dealership
         init();
         DealershipFileManager.saveDealership(dealership);
-        //System.out.println("Display Menu");
         loadMenu();
     }
 
@@ -87,7 +84,52 @@ public class UserInterface
     }
 
     private static void leaseSellCar() {
-        System.out.println("Would you like ");
+        System.out.println("Would you like to sell or lease a vehicle?\n" +
+                "Enter the VIN of the vehicle\n" +
+                "VIN: ");
+        int vin = inputScanner.nextInt();
+        inputScanner.nextLine(); // Consume leftover newline
+
+        Vehicle selectedVehicle  = null;
+        for (Vehicle vehicle : dealership.getAllVehicles()) {
+            if (vehicle.getVin() == vin) {
+                selectedVehicle  = vehicle;
+                break;
+            }
+        }
+
+        if (selectedVehicle  == null) {
+            System.out.println("Vehicle not found.");
+            return;
+        }
+
+        System.out.println("Is the vehicle being financed? (yes/no):");
+        String financeResponse = inputScanner.nextLine();
+        boolean isFinanced = financeResponse.equalsIgnoreCase("yes");
+
+        System.out.println("Please enter the date of sale (e.g., MM/DD/YYYY):");
+        String date = inputScanner.nextLine();
+
+        System.out.println("Enter the customer's name:");
+        String customerName = inputScanner.nextLine();
+
+        System.out.println("Enter the customer's email:");
+        String email = inputScanner.nextLine();
+
+        // Create SalesContract object
+        SalesContract contract = new SalesContract(date, customerName, email, selectedVehicle, isFinanced);
+
+        contract.getTotalPrice();
+        double monthlyPayment = contract.getMonthlyPayment();
+
+        if (isFinanced) {
+            System.out.printf("Monthly Payment: $%.2f%n", monthlyPayment);
+        } else {
+            System.out.println("This vehicle is not being financed, so there is no monthly payment.");
+        }
+
+        // Remove vehicle from inventory
+        dealership.removeVehicle(selectedVehicle);
     }
 
     private static void displayVehicles(List<Vehicle>vehicles)
@@ -206,5 +248,7 @@ public class UserInterface
                 break;
             }
         }
+
+        dealership.removeVehicle(vehicleToRemove);
     }
 }
