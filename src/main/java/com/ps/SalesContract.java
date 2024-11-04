@@ -22,8 +22,6 @@ public class SalesContract extends Contract {
         }else{
             this.proFee = 495;
         }
-
-
     }
 
     public double getTax() {
@@ -86,7 +84,5 @@ public class SalesContract extends Contract {
 
         return monthlyPayment;
     }
-
-
 }
 

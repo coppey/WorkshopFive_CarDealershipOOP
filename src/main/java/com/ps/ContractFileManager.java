@@ -7,82 +7,60 @@ import java.io.FileWriter;
 import java.util.List;
 
 public class ContractFileManager {
-    /*
-    public static Contract getContract() {
-
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("contracts.csv"));
-
-            String firstLine = bufferedReader.readLine();
-            String[] splitDealership = firstLine.split("\\|");
-            String name = splitDealership[0];
-            String address = splitDealership[1];
-            String phone = splitDealership[2];
-            Contract contract = new Contract() {
-            };
-
-            String input;
-
-            while ((input = bufferedReader.readLine()) != null) {
-                String[] splitVehicle = input.split("\\|");
-                int vin = Integer.parseInt(splitVehicle[0]);
-                int year = Integer.parseInt(splitVehicle[1]);
-                String make = splitVehicle[2];
-                String model = splitVehicle[3];
-                String vehicleType = splitVehicle[4];
-                String color = splitVehicle[5];
-                int odometer = Integer.parseInt(splitVehicle[6]);
-                double price = Double.parseDouble(splitVehicle[7]);
-                Vehicle vehicle = new Vehicle(vin, year, make, model, vehicleType, color, odometer, price);
-
-                //contract.leaseSellCar(vehicle);
-            }
-
-            bufferedReader.close();
-
-            return contract;
-
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
-
-        return null;
-    }
 
     public static void saveContract(Contract contract) {
         try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("inventory.csv"));
-            String firstLine = String.format("%s|%s|%s\n",
-                    dealership.getName(),
-                    dealership.getAddress(),
-                    dealership.getPhone()
+            // Open the file in append mode
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("contracts.csv", true));
+
+            // Determine transaction type
+            String transactionType = (contract instanceof SalesContract) ? "SALE" : "LEASE";
+
+            Vehicle vehicle = contract.getVehicle();
+
+            String contractLine = String.format("%s|%s|%s|%s|%d|%d|%s|%s|%s|%s|%d|%.2f|",
+                    transactionType,
+                    contract.getDate(),
+                    contract.getCustomerName(),
+                    contract.getEmail(),
+                    vehicle.getVin(),
+                    vehicle.getYear(),
+                    vehicle.getMake(),
+                    vehicle.getModel(),
+                    vehicle.getVehicleType(),
+                    vehicle.getColor(),
+                    vehicle.getOdometer(),
+                    vehicle.getPrice()
             );
 
-            bufferedWriter.write(firstLine);
 
-            List<Vehicle> vehicles = dealership.getAllVehicles();
-            for (Vehicle vehicle : vehicles) {
-                String vehicleLine = String.format("%d|%d|%s|%s|%s|%s|%d|%.2f\n",
-                        vehicle.getVin(),
-                        vehicle.getYear(),
-                        vehicle.getMake(),
-                        vehicle.getModel(),
-                        vehicle.getVehicleType(),
-                        vehicle.getColor(),
-                        vehicle.getOdometer(),
-                        vehicle.getPrice()
+            if (contract instanceof SalesContract) {
+                SalesContract salesContract = (SalesContract) contract;
+                contractLine += String.format("%.2f|%.2f|%.2f|%.2f|%s|%.2f\n",
+                        salesContract.getTax() * vehicle.getPrice(),
+                        salesContract.getRecFee(),
+                        salesContract.getProFee(),
+                        salesContract.getTotalPrice(),
+                        salesContract.isFinanced() ? "YES" : "NO",
+                        salesContract.getMonthlyPayment()
                 );
-                bufferedWriter.write(vehicleLine);
+            } else if (contract instanceof LeaseContract) {
+                LeaseContract leaseContract = (LeaseContract) contract;
+                contractLine += String.format("%.2f|%.2f|%.2f|%.2f|%.2f\n",
+                        leaseContract.getEndValue(),
+                        leaseContract.getLeaseFee(),
+                        leaseContract.getTotalPrice(),
+                        "YES",
+                        leaseContract.getMonthlyPayment()
+                );
             }
+
+            bufferedWriter.write(contractLine);
             bufferedWriter.close();
+
+            System.out.println("Contract saved successfully.");
         } catch (Exception exception) {
             exception.printStackTrace();
         }
     }
-
-
-
-
-   }
-   */
 }

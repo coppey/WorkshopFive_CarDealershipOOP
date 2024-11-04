@@ -71,7 +71,7 @@ public class UserInterface
                     processRemoveVehicleRequest();
                     break;
                 case 10:
-                    leaseSellCar();
+                    contractCar();
                     break;
                 case 0:
                     System.out.println("Goodbye!");
@@ -83,53 +83,110 @@ public class UserInterface
         }while(command != 0);
     }
 
-    private static void leaseSellCar() {
-        System.out.println("Would you like to sell or lease a vehicle?\n" +
-                "Enter the VIN of the vehicle\n" +
-                "VIN: ");
-        int vin = inputScanner.nextInt();
-        inputScanner.nextLine(); // Consume leftover newline
+    private static void contractCar() {
+        int command;
 
-        Vehicle selectedVehicle  = null;
-        for (Vehicle vehicle : dealership.getAllVehicles()) {
-            if (vehicle.getVin() == vin) {
-                selectedVehicle  = vehicle;
-                break;
+        do {
+            System.out.println("Would you like to sell or lease a vehicle?\n" +
+                    "1) Sell " +
+                    "2) Lease\n" +
+                    "0 exit");
+            //potential to view all contracts
+            command = commandScanner.nextInt();
+
+            switch (command){
+                case 1: //Sell vehicle
+                    System.out.println("Enter Vin of the vehicle youd like to sell\n" +
+                            "VIN:");
+                    int vin = inputScanner.nextInt();
+                    inputScanner.nextLine(); // Consume leftover newline
+
+                    Vehicle selectedVehicle = null;
+                    for (Vehicle vehicle : dealership.getAllVehicles()) {
+                        if (vehicle.getVin() == vin) {
+                            selectedVehicle = vehicle;
+                            break;
+                        }
+                    }
+
+                    if (selectedVehicle == null) {
+                        System.out.println("Vehicle not found.");
+                        return;
+                    }
+
+                    System.out.println("Is the vehicle being financed? (yes/no):");
+                    String financeResponse = inputScanner.nextLine();
+                    boolean isFinanced = financeResponse.equalsIgnoreCase("yes");
+
+                    System.out.println("Please enter the date of sale (MM/DD/YYYY):");
+                    String date = inputScanner.nextLine();
+
+                    System.out.println("Enter the customer's name:");
+                    String customerName = inputScanner.nextLine();
+
+                    System.out.println("Enter the customer's email:");
+                    String email = inputScanner.nextLine();
+
+                    // Create SalesContract object
+                    SalesContract contract = new SalesContract(date, customerName, email, selectedVehicle, isFinanced);
+
+                    contract.getTotalPrice();
+                    double monthlyPayment = contract.getMonthlyPayment();
+
+                    if (isFinanced) {
+                        System.out.printf("Monthly Payment: $%.2f%n", monthlyPayment);
+                    } else {
+                        System.out.println("This vehicle is not being financed, so there is no monthly payment.");
+                    }
+
+                    // Remove vehicle from inventory
+                    dealership.removeVehicle(selectedVehicle);
+                    break;
+                case 2: // Lease a vehicle
+                    System.out.println("Enter VIN of the vehicle you'd like to lease\n" +
+                            "VIN:");
+                    int vin2 = inputScanner.nextInt();
+                    inputScanner.nextLine(); // Consume leftover newline
+
+                    Vehicle leasedVehicle = null;
+                    for (Vehicle vehicle : dealership.getAllVehicles()) {
+                        if (vehicle.getVin() == vin2) {
+                            leasedVehicle = vehicle;
+                            break;
+                        }
+                    }
+
+                    if (leasedVehicle == null) {
+                        System.out.println("Vehicle not found.");
+                        return;
+                    }
+
+                    System.out.println("Please enter the date of lease (MM/DD/YYYY):");
+                    String leaseDate = inputScanner.nextLine();
+
+                    System.out.println("Enter the customer's name:");
+                    String leaseCustomerName = inputScanner.nextLine();
+
+                    System.out.println("Enter the customer's email:");
+                    String leaseEmail = inputScanner.nextLine();
+
+                    // Create LeaseContract object
+                    LeaseContract leaseContract = new LeaseContract(leaseDate, leaseCustomerName, leaseEmail, leasedVehicle);
+
+                    leaseContract.getTotalPrice();
+                    double leaseMonthlyPayment = leaseContract.getMonthlyPayment();
+                    System.out.printf("Monthly Lease Payment: $%.2f%n", leaseMonthlyPayment);
+
+                    // Remove vehicle from inventory
+                    dealership.removeVehicle(leasedVehicle);
+                    System.out.println("Vehicle has been leased and removed from the inventory.");
+                    break;
+
+                default:
+                    System.out.println("Please enter valid command");
             }
-        }
 
-        if (selectedVehicle  == null) {
-            System.out.println("Vehicle not found.");
-            return;
-        }
-
-        System.out.println("Is the vehicle being financed? (yes/no):");
-        String financeResponse = inputScanner.nextLine();
-        boolean isFinanced = financeResponse.equalsIgnoreCase("yes");
-
-        System.out.println("Please enter the date of sale (e.g., MM/DD/YYYY):");
-        String date = inputScanner.nextLine();
-
-        System.out.println("Enter the customer's name:");
-        String customerName = inputScanner.nextLine();
-
-        System.out.println("Enter the customer's email:");
-        String email = inputScanner.nextLine();
-
-        // Create SalesContract object
-        SalesContract contract = new SalesContract(date, customerName, email, selectedVehicle, isFinanced);
-
-        contract.getTotalPrice();
-        double monthlyPayment = contract.getMonthlyPayment();
-
-        if (isFinanced) {
-            System.out.printf("Monthly Payment: $%.2f%n", monthlyPayment);
-        } else {
-            System.out.println("This vehicle is not being financed, so there is no monthly payment.");
-        }
-
-        // Remove vehicle from inventory
-        dealership.removeVehicle(selectedVehicle);
+        }while(command != 0);
     }
 
     private static void displayVehicles(List<Vehicle>vehicles)
@@ -236,12 +293,11 @@ public class UserInterface
     }
 
     public static void processRemoveVehicleRequest(){
-        System.out.println("Please enter the vin# of the Vehicle you'd like to remove\n" +
-                "Vin#: ");
+        System.out.println("Please enter the VIN# of the Vehicle you'd like to remove\n" +
+                "VIN#: ");
         int vin = inputScanner.nextInt();
 
         Vehicle vehicleToRemove = null;
-
         for(Vehicle vehicle : dealership.getAllVehicles()){
             if (vehicle.getVin() == vin){
                 vehicleToRemove = vehicle;
